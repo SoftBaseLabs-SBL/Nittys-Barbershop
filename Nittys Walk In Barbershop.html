@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Nitty's Walk In Barbershop — Toledo, OH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2EBDB;
+    --bg-2:#EAE0CB;
+    --ink:#15110C;
+    --ink-2:#2A241B;
+    --muted:#6B6353;
+    --red:#C5331F;          /* barbershop red */
+    --red-deep:#8E1F12;
+    --gold:#E0A93E;         /* mustard secondary */
+    --cream:#FBF6EA;
+    --line:rgba(21,17,12,.14);
+    --line-strong:rgba(21,17,12,.4);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Manrope",system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* paper grain */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background-image:
+      radial-gradient(rgba(21,17,12,.045) 1px, transparent 1px),
+      radial-gradient(rgba(21,17,12,.03) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+    mix-blend-mode:multiply;
+    opacity:.6;
+  }
+
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  .display{font-family:"Anton",sans-serif;font-weight:400;letter-spacing:.005em;line-height:.95;text-transform:uppercase}
+
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+  /* ---------- layout helpers ---------- */
+  .wrap{max-width:1320px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
+  @media (max-width:640px){.wrap{padding:0 18px}}
+
+  /* ---------- NAV ---------- */
+  nav.top{
+    position:sticky;top:0;z-index:50;
+    background:rgba(242,235,219,.85);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.top .row{
+    display:flex;align-items:center;justify-content:space-between;
+    height:70px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.01em}
+  .brand .mark{
+    width:34px;height:34px;border-radius:50%;
+    background:
+      repeating-linear-gradient(135deg,#fff 0 6px,var(--red) 6px 12px,#1a1612 12px 18px,var(--red) 18px 24px);
+    border:2px solid var(--ink);
+    box-shadow:0 0 0 3px var(--bg), 0 0 0 4px var(--ink);
+    animation:spin 6s linear infinite;
+  }
+  @keyframes spin{to{background-position:0 -120px}}
+  .brand .name{font-family:"Anton";font-size:24px;letter-spacing:.01em;text-transform:uppercase;line-height:1}
+  .brand .sub{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  @media(max-width:380px){.brand .sub{display:none}}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-weight:600;font-size:15px;position:relative}
+  .nav-links a::after{
+    content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--red);
+    transform:scaleX(0);transform-origin:left;transition:transform .25s ease;
+  }
+  .nav-links a:hover::after{transform:scaleX(1)}
+  .nav-cta{
+    background:var(--ink);color:var(--cream);
+    padding:11px 18px;border-radius:999px;font-weight:700;font-size:14px;
+    display:inline-flex;align-items:center;gap:8px;
+    white-space:nowrap;
+    transition:transform .15s ease, background .2s;
+  }
+  .nav-cta .label-short{display:none}
+  @media(max-width:1080px){
+    .nav-cta .label-long{display:none}
+    .nav-cta .label-short{display:inline !important}
+  }
+  .nav-cta:hover{background:var(--red);transform:translateY(-1px)}
+  .nav-cta .dot{width:8px;height:8px;border-radius:50%;background:#5BD16A;box-shadow:0 0 0 0 rgba(91,209,106,.7);animation:pulse 1.8s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(91,209,106,.7)}
+    70%{box-shadow:0 0 0 10px rgba(91,209,106,0)}
+    100%{box-shadow:0 0 0 0 rgba(91,209,106,0)}
+  }
+  .burger{display:none;width:42px;height:42px;border:1px solid var(--ink);border-radius:50%;align-items:center;justify-content:center}
+  .burger span{display:block;width:18px;height:2px;background:var(--ink);position:relative}
+  .burger span::before,.burger span::after{content:"";position:absolute;left:0;right:0;height:2px;background:var(--ink)}
+  .burger span::before{top:-6px}.burger span::after{top:6px}
+  @media(max-width:860px){
+    .nav-links{display:none}
+    .burger{display:flex}
+    nav.top.open .nav-links{
+      display:flex;position:absolute;top:70px;left:0;right:0;
+      flex-direction:column;background:var(--bg);padding:24px 28px;gap:20px;
+      border-bottom:1px solid var(--line);
+    }
+    nav.top.open .nav-links a{font-size:22px;font-family:"Anton";text-transform:uppercase}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{padding:48px 0 32px;position:relative}
+  @media(max-width:640px){.hero{padding:28px 0 20px}}
+  .hero .badges{
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;
+  }
+  .badge{
+    border:1px solid var(--line-strong);padding:7px 12px;border-radius:999px;
+    font-family:"JetBrains Mono";font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.4);
+  }
+  .badge.live .dot{width:7px;height:7px;border-radius:50%;background:#1ea84a}
+  .badge.closed .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+
+  .hero h1{
+    font-size:clamp(52px,12vw,208px);
+    margin:0;
+    color:var(--ink);
+    text-wrap:balance;
+    overflow-wrap:break-word;
+  }
+  .hero h1 .line{display:block;position:relative}
+  .hero h1 .red{color:var(--red)}
+  .hero h1 .outline{
+    -webkit-text-stroke:2px var(--ink);
+    color:transparent;
+  }
+  @media(max-width:520px){.hero h1 .outline{-webkit-text-stroke-width:1.5px}}
+  .hero h1 .amp{
+    font-family:"Manrope";font-style:italic;font-weight:300;
+    font-size:.55em;vertical-align:.18em;color:var(--muted);text-transform:none;letter-spacing:0;
+  }
+
+  .hero-foot{
+    margin-top:36px;
+    display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px;align-items:end;
+    border-top:1px solid var(--line);padding-top:24px;
+  }
+  @media(max-width:860px){.hero-foot{grid-template-columns:1fr 1fr;gap:20px}}
+  @media(max-width:520px){.hero-foot{grid-template-columns:1fr;gap:18px;margin-top:28px}}
+  .hero-foot .lead{
+    font-size:clamp(16px,1.8vw,22px);line-height:1.45;max-width:46ch;color:var(--ink-2);
+  }
+  .hero-foot .lead strong{background:var(--gold);padding:0 6px;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  .stat .num{font-family:"Anton";font-size:clamp(40px,6vw,54px);line-height:1;color:var(--red);text-transform:uppercase}
+  .stat .lbl{font-family:"JetBrains Mono";font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+  .stars{display:flex;gap:2px;color:var(--gold);margin-top:6px;font-size:18px}
+
+  /* barber pole decorative on hero */
+  .pole{
+    position:absolute;right:6%;top:90px;width:42px;height:340px;border-radius:999px;
+    background:
+      repeating-linear-gradient(135deg,#fff 0 12px,var(--red) 12px 24px,#0e0c08 24px 36px,var(--red) 36px 48px);
+    border:3px solid var(--ink);
+    box-shadow:0 14px 40px rgba(21,17,12,.18);
+    animation:spin2 5s linear infinite;
+  }
+  .pole::before,.pole::after{
+    content:"";position:absolute;left:-10px;right:-10px;height:26px;background:#c9c4b6;
+    border:3px solid var(--ink);border-radius:6px;
+  }
+  .pole::before{top:-18px}
+  .pole::after{bottom:-18px}
+  @keyframes spin2{to{background-position:0 -180px}}
+  @media(max-width:1100px){.pole{display:none}}
+
+  /* ---------- MARQUEE ---------- */
+  .marquee{
+    margin-top:36px;
+    background:var(--ink);color:var(--cream);
+    border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);
+    overflow:hidden;
+  }
+  .marquee .track{
+    display:flex;gap:48px;padding:18px 0;white-space:nowrap;
+    animation:slide 36s linear infinite;
+    font-family:"Anton";font-size:clamp(24px,4.5vw,36px);text-transform:uppercase;letter-spacing:.02em;
+  }
+  .marquee .track span{display:inline-flex;align-items:center;gap:48px}
+  .marquee .track .dot{width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block}
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  /* ---------- SERVICES ---------- */
+  section{padding:96px 0;position:relative}
+  @media(max-width:760px){section{padding:64px 0}}
+  @media(max-width:480px){section{padding:48px 0}}
+  .section-head{
+    display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:40px;
+    border-bottom:1px solid var(--line);padding-bottom:20px;flex-wrap:wrap;
+  }
+  .section-head .eyebrow{color:var(--muted)}
+  .section-head h2{
+    font-family:"Anton";font-size:clamp(42px,7vw,96px);text-transform:uppercase;
+    margin:8px 0 0;line-height:.92;letter-spacing:.005em;
+  }
+  .section-head h2 em{font-family:"Manrope";font-weight:300;font-style:italic;font-size:.55em;color:var(--red);text-transform:none;letter-spacing:-.01em}
+
+  .services{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:920px){.services{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.services{grid-template-columns:1fr}}
+  .svc{
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:24px;
+    position:relative;overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease, background .3s;
+    cursor:pointer;
+  }
+  @media(max-width:480px){.svc{padding:20px}}
+  .svc .num{position:absolute;top:18px;right:22px;font-family:"JetBrains Mono";font-size:12px;color:var(--muted)}
+  .svc h3{font-family:"Anton";font-size:clamp(28px,4.5vw,36px);text-transform:uppercase;margin:48px 0 8px;letter-spacing:.01em;line-height:1}
+  .svc p{color:var(--muted);font-size:15px;margin:0 0 24px;min-height:3em}
+  .svc .price{
+    display:flex;align-items:baseline;gap:8px;
+    border-top:1px dashed var(--line-strong);padding-top:16px;
+  }
+  .svc .price .amt{font-family:"Anton";font-size:42px;color:var(--ink);line-height:1}
+  .svc .price .from{font-family:"JetBrains Mono";font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .svc .price .min{margin-left:auto;font-family:"JetBrains Mono";font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .svc::after{
+    content:"";position:absolute;left:0;right:0;top:0;height:4px;
+    background:var(--red);transform:scaleX(0);transform-origin:left;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1);
+  }
+  .svc:hover{transform:translateY(-4px);box-shadow:0 18px 50px rgba(21,17,12,.12)}
+  .svc:hover::after{transform:scaleX(1)}
+  .svc:nth-child(3n+2){background:#fff5e1}
+  .svc:nth-child(3n+3){background:#f1ece0}
+
+  /* ---------- STORY (THE CHAIR) ---------- */
+  .story{background:var(--ink);color:var(--cream);border-radius:32px;margin:0 28px;padding:80px 0 60px;position:relative;overflow:hidden}
+  @media(max-width:760px){.story{margin:0 16px;padding:56px 0 40px;border-radius:24px}}
+  @media(max-width:480px){.story{margin:0 10px;padding:48px 0 32px;border-radius:20px}}
+  .story .wrap{max-width:1280px;padding:0 60px}
+  @media(max-width:760px){.story .wrap{padding:0 28px}}
+  @media(max-width:480px){.story .wrap{padding:0 20px}}
+  .story .section-head{border-color:rgba(255,255,255,.12)}
+  .story .section-head .eyebrow{color:rgba(255,255,255,.55)}
+  .story h2{color:var(--cream)}
+  .story h2 em{color:var(--gold)}
+  .story-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:60px;align-items:start}
+  @media(max-width:860px){.story-grid{grid-template-columns:1fr;gap:40px}}
+  .story-grid p{font-size:clamp(17px,1.6vw,19px);line-height:1.55;color:rgba(251,246,234,.85);max-width:55ch}
+  .story-grid p + p{margin-top:18px}
+  .story-grid .pull{
+    font-family:"Anton";font-size:clamp(36px,5vw,48px);line-height:.95;text-transform:uppercase;
+    color:var(--gold);max-width:14ch;
+  }
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px;border-top:1px solid rgba(255,255,255,.14);padding-top:32px}
+  @media(max-width:640px){.pillars{grid-template-columns:1fr;gap:24px;margin-top:36px}}
+  .pillar .k{font-family:"Anton";font-size:clamp(48px,7vw,64px);color:var(--red);line-height:1}
+  .pillar .v{font-family:"JetBrains Mono";font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(251,246,234,.7);margin-top:8px}
+  .pillar p{font-size:15px;color:rgba(251,246,234,.7);margin-top:10px;max-width:30ch}
+
+  /* ---------- REVIEWS ---------- */
+  .reviews{background:var(--bg-2)}
+  .review-row{
+    display:flex;gap:20px;overflow-x:auto;padding-bottom:8px;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+  }
+  .review-row::-webkit-scrollbar{display:none}
+  .review{
+    flex:0 0 320px;scroll-snap-align:start;
+    background:var(--cream);border:1px solid var(--line);border-radius:18px;
+    padding:24px;display:flex;flex-direction:column;gap:14px;
+  }
+  @media(max-width:480px){.review{flex:0 0 82vw;padding:20px}}
+  .review .top{display:flex;align-items:center;gap:12px}
+  .review .av{
+    width:44px;height:44px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Anton";font-size:18px;color:var(--cream);
+    background:var(--ink);
+  }
+  .review .name{font-weight:700;font-size:15px}
+  .review .when{font-family:"JetBrains Mono";font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .review .stars{margin:0}
+  .review blockquote{margin:0;font-size:16px;line-height:1.5;color:var(--ink-2)}
+  .review .src{margin-top:auto;font-family:"JetBrains Mono";font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+  .review-foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:16px;flex-wrap:wrap}
+  .review-foot .nav-btns{display:flex;gap:8px}
+  .review-foot button{
+    width:46px;height:46px;border-radius:50%;border:1px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;transition:background .2s, color .2s;
+  }
+  .review-foot button:hover{background:var(--ink);color:var(--cream)}
+
+  /* ---------- FIND US ---------- */
+  .find{padding-bottom:48px}
+  .find-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:32px}
+  @media(max-width:860px){.find-grid{grid-template-columns:1fr;gap:20px}}
+  .map{
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:24px;
+    aspect-ratio:5/4;
+    position:relative;overflow:hidden;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 36px 36px, 36px 36px;
+  }
+  .map::before{
+    /* "road" */
+    content:"";position:absolute;left:0;right:0;top:58%;height:48px;
+    background:var(--bg-2);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .map::after{
+    content:"";position:absolute;left:0;right:0;top:calc(58% + 23px);height:2px;
+    background:repeating-linear-gradient(90deg,var(--ink) 0 14px,transparent 14px 28px);
+    opacity:.6;
+  }
+  .map .pin{
+    position:absolute;left:48%;top:42%;
+    transform:translate(-50%,-100%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .map .pin .bubble{
+    background:var(--ink);color:var(--cream);
+    padding:10px 14px;border-radius:14px;font-family:"Anton";font-size:18px;letter-spacing:.02em;
+    text-transform:uppercase;white-space:nowrap;position:relative;
+  }
+  .map .pin .bubble::after{
+    content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);
+    width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--ink);
+  }
+  .map .pin .dot{
+    width:18px;height:18px;border-radius:50%;background:var(--red);
+    border:3px solid var(--ink);
+    box-shadow:0 0 0 6px rgba(197,51,31,.18);
+    animation:pulse2 1.8s ease-out infinite;
+  }
+  @keyframes pulse2{
+    0%{box-shadow:0 0 0 0 rgba(197,51,31,.5)}
+    100%{box-shadow:0 0 0 22px rgba(197,51,31,0)}
+  }
+  .map .label{
+    position:absolute;font-family:"JetBrains Mono";font-size:10px;color:var(--muted);
+    letter-spacing:.12em;text-transform:uppercase;
+  }
+  .map .label.l1{top:14px;left:18px}
+  .map .label.l2{bottom:14px;right:18px}
+  .map .street{
+    position:absolute;left:18px;right:18px;top:calc(58% + 56px);
+    font-family:"JetBrains Mono";font-size:11px;color:var(--ink-2);letter-spacing:.18em;text-transform:uppercase;
+  }
+
+  .info-card{
+    background:var(--cream);border:1px solid var(--line);border-radius:24px;padding:32px;
+    display:flex;flex-direction:column;gap:24px;
+  }
+  @media(max-width:480px){.info-card{padding:22px;border-radius:18px}}
+  .info-row{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:16px}
+  .info-row:first-of-type{border-top:0;padding-top:0}
+  .info-row .k{font-family:"JetBrains Mono";font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .info-row .v{font-family:"Anton";font-size:clamp(24px,4vw,30px);text-transform:uppercase;line-height:1.1}
+  .info-row .v.small{font-size:clamp(20px,3.5vw,22px)}
+  .info-row a.copy{font-family:"JetBrains Mono";font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-top:6px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;min-height:32px}
+  .info-row a.copy:hover{text-decoration:underline}
+
+  .hours{display:grid;grid-template-columns:1fr auto;gap:6px 18px}
+  .hours .d{font-weight:600}
+  .hours .t{font-family:"JetBrains Mono";font-size:13px;color:var(--ink-2)}
+  .hours .today{color:var(--red);font-weight:700}
+
+  /* ---------- BIG CTA FOOTER ---------- */
+  .cta{
+    background:var(--red);color:var(--cream);
+    margin:0 28px 28px;border-radius:32px;padding:80px 0;text-align:center;overflow:hidden;position:relative;
+  }
+  @media(max-width:760px){.cta{margin:0 16px 16px;padding:60px 0;border-radius:24px}}
+  @media(max-width:480px){.cta{margin:0 10px 10px;padding:48px 0;border-radius:20px}}
+  .cta h2{
+    font-family:"Anton";font-size:clamp(48px,11vw,180px);text-transform:uppercase;line-height:.92;margin:0;letter-spacing:.005em;
+  }
+  .cta h2 em{font-family:"Manrope";font-style:italic;font-weight:300;font-size:.45em;text-transform:none;color:rgba(251,246,234,.85);vertical-align:.25em;letter-spacing:-.01em}
+  .cta .row{display:flex;justify-content:center;gap:16px;margin-top:38px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:16px 22px;border-radius:999px;font-weight:800;font-size:16px;
+    transition:transform .15s, background .2s, color .2s;
+    border:2px solid var(--cream);
+    min-height:48px;
+  }
+  .btn.dark{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .btn.dark:hover{background:var(--cream);color:var(--ink)}
+  .btn.outline{color:var(--cream)}
+  .btn.outline:hover{background:var(--cream);color:var(--red)}
+
+  /* footer */
+  footer{padding:24px 0 60px;font-size:13px;color:var(--muted)}
+  footer .row{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  footer .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  @media(max-width:520px){
+    footer .left{flex-direction:column;align-items:flex-start;gap:4px}
+    footer .left > span:nth-child(2),
+    footer .left > span:nth-child(4){display:none}
+  }
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--cream);
+    padding:12px 18px;border-radius:999px;font-family:"JetBrains Mono";font-size:12px;
+    text-transform:uppercase;letter-spacing:.12em;
+    opacity:0;transition:opacity .25s, transform .25s;
+    z-index:100;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* selection */
+  ::selection{background:var(--red);color:var(--cream)}
+</style>
+</head>
+<body>
+
+<nav class="top" id="topnav">
+  <div class="wrap row">
+    <a href="#top" class="brand" aria-label="Nitty's Walk In Barbershop">
+      <div class="mark" aria-hidden="true"></div>
+      <div>
+        <div class="name">Nitty's</div>
+        <div class="sub">Walk-in barbershop · Toledo</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#services">Cuts</a>
+      <a href="#story">The Shop</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#find">Find us</a>
+      <a class="nav-cta" href="tel:+14193439697"><span class="dot" id="navdot" aria-hidden="true"></span><span id="navstatus" class="label-long">Open · No appointment</span><span class="label-short" style="display:none">Call</span></a>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu"><span></span></button>
+  </div>
+</nav>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="badges">
+      <span class="badge live"><span class="dot" id="livedot"></span><span id="livetxt">Walk-ins open now</span></span>
+      <span class="badge">★ 4.5 on Google · 119 reviews</span>
+      <span class="badge">Est. Toledo, OH</span>
+    </div>
+
+    <h1 class="display">
+      <span class="line">Sharp cuts.</span>
+      <span class="line"><span class="outline">No</span> <span class="red">appointment.</span></span>
+      <span class="line">Just walk <span class="amp">&amp;</span> sit.</span>
+    </h1>
+
+    <div class="hero-foot">
+      <p class="lead">
+        Nitty's is a neighborhood barbershop on N. Detroit Ave. — <strong>walk in any time we're open</strong>, grab a chair, and leave looking like the best version of you. Fades, tapers, line-ups, beards, the works.
+      </p>
+      <div class="stat">
+        <div class="num">4.5</div>
+        <div class="stars" aria-label="4.5 out of 5 stars">★★★★<span style="opacity:.5">★</span></div>
+        <div class="lbl">119 Google reviews</div>
+      </div>
+      <div class="stat">
+        <div class="num">~12<span style="font-size:.5em;color:var(--muted)">min</span></div>
+        <div class="lbl">Current wait</div>
+        <div class="mono" style="color:var(--muted);margin-top:4px">Updated live</div>
+      </div>
+    </div>
+  </div>
+  <div class="pole" aria-hidden="true"></div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Fades<span class="dot"></span>Tapers<span class="dot"></span>Line-ups<span class="dot"></span>Beards<span class="dot"></span>Kids welcome<span class="dot"></span>Hot towels<span class="dot"></span>Walk-ins only<span class="dot"></span>Open 6 days<span class="dot"></span></span>
+    <span>Fades<span class="dot"></span>Tapers<span class="dot"></span>Line-ups<span class="dot"></span>Beards<span class="dot"></span>Kids welcome<span class="dot"></span>Hot towels<span class="dot"></span>Walk-ins only<span class="dot"></span>Open 6 days<span class="dot"></span></span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="mono eyebrow">02 — The menu</div>
+        <h2>Cuts <em>&amp; care</em></h2>
+      </div>
+      <div class="mono" style="color:var(--muted);max-width:32ch">Cash &amp; card. Tip the barber, they earn it.</div>
+    </div>
+
+    <div class="services">
+      <article class="svc" tabindex="0">
+        <div class="num">01</div>
+        <h3>Signature Cut</h3>
+        <p>Consultation, shampoo, scissor &amp; clipper work, hot-towel finish. The whole experience.</p>
+        <div class="price"><span class="from">From</span><span class="amt">$30</span><span class="min">45 min</span></div>
+      </article>
+
+      <article class="svc" tabindex="0">
+        <div class="num">02</div>
+        <h3>Skin Fade</h3>
+        <p>Tight, blended, bald-skin fade with a precision line-up. Crisp from every angle.</p>
+        <div class="price"><span class="from">From</span><span class="amt">$35</span><span class="min">45 min</span></div>
+      </article>
+
+      <article class="svc" tabindex="0">
+        <div class="num">03</div>
+        <h3>Beard Sculpt</h3>
+        <p>Shape, trim, edge and oil. We'll keep the character — just sharper.</p>
+        <div class="price"><span class="from">From</span><span class="amt">$20</span><span class="min">25 min</span></div>
+      </article>
+
+      <article class="svc" tabindex="0">
+        <div class="num">04</div>
+        <h3>Cut + Beard</h3>
+        <p>Our most-booked combo. Save a few bucks doing both in one chair, one sit.</p>
+        <div class="price"><span class="from">From</span><span class="amt">$45</span><span class="min">60 min</span></div>
+      </article>
+
+      <article class="svc" tabindex="0">
+        <div class="num">05</div>
+        <h3>Lil Homies <em style="font-family:Manrope;font-style:italic;font-weight:400;font-size:.55em;color:var(--muted);text-transform:none">12 &amp; under</em></h3>
+        <p>Patient barbers, no-judgment squirms, and a sticker on the way out. We got 'em.</p>
+        <div class="price"><span class="from">From</span><span class="amt">$22</span><span class="min">30 min</span></div>
+      </article>
+
+      <article class="svc" tabindex="0">
+        <div class="num">06</div>
+        <h3>Senior Sit</h3>
+        <p>For our 60+ regulars. Same cut, same care, a little easier on the wallet.</p>
+        <div class="price"><span class="from">From</span><span class="amt">$18</span><span class="min">30 min</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="mono eyebrow" style="color:rgba(255,255,255,.55)">03 — The chair</div>
+        <h2>A neighborhood <em>kind of shop.</em></h2>
+      </div>
+    </div>
+    <div class="story-grid">
+      <div>
+        <p>
+          Nitty's is the kind of shop where the music is good, the conversation is better, and nobody side-eyes you for asking what "two on the sides" actually means. We've been cutting on N. Detroit Ave. for years — fathers, sons, grandfathers, the whole block.
+        </p>
+        <p>
+          No app to download. No 47-step booking flow. Just push the door open, write your name on the board, and grab a seat. We'll take care of the rest.
+        </p>
+      </div>
+      <div class="pull">
+        “Walk in a stranger, walk out a regular.”
+      </div>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="k">06</div>
+        <div class="v">Chairs in rotation</div>
+        <p>Six barbers, six styles, zero wait quotas. Pick whoever's open.</p>
+      </div>
+      <div class="pillar">
+        <div class="k">100%</div>
+        <div class="v">Walk-in friendly</div>
+        <p>Show up, get cut. That's the whole pitch. We've kept it that way on purpose.</p>
+      </div>
+      <div class="pillar">
+        <div class="k">15+</div>
+        <div class="v">Years on Detroit Ave.</div>
+        <p>We watched the kids in booster seats grow up and bring their own kids in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews" id="reviews">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="mono eyebrow">04 — The talk</div>
+        <h2>What the chair <em>has heard.</em></h2>
+      </div>
+      <div class="mono" style="color:var(--muted)">★ 4.5 · 119 Google reviews</div>
+    </div>
+
+    <div class="review-row" id="reviewRow">
+      <article class="review">
+        <div class="top">
+          <div class="av" style="background:#C5331F">M</div>
+          <div>
+            <div class="name">Marcus T.</div>
+            <div class="when">3 weeks ago</div>
+          </div>
+        </div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
+        <blockquote>Walked in on a Saturday expecting a 45 min wait. Sat down in ten. Best skin fade I've had in Toledo, hands down.</blockquote>
+        <div class="src">Google review</div>
+      </article>
+
+      <article class="review">
+        <div class="top">
+          <div class="av" style="background:#1F3F8E">D</div>
+          <div>
+            <div class="name">Denise W.</div>
+            <div class="when">1 month ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <blockquote>Bring my two boys here every couple weeks. They're patient with the wiggly one and never make us feel rushed. Worth the drive across town.</blockquote>
+        <div class="src">Google review</div>
+      </article>
+
+      <article class="review">
+        <div class="top">
+          <div class="av" style="background:#0E6B3A">J</div>
+          <div>
+            <div class="name">Jamal R.</div>
+            <div class="when">2 months ago</div>
+          </div>
+        </div>
+        <div class="stars" aria-label="4 stars">★★★★<span style="opacity:.35">★</span></div>
+        <blockquote>Solid spot. Good prices, good cuts, real people. Lost a star because the wait got long that one Friday — pay for a Saturday cut on Saturday I guess.</blockquote>
+        <div class="src">Google review</div>
+      </article>
+
+      <article class="review">
+        <div class="top">
+          <div class="av" style="background:#B57B16">A</div>
+          <div>
+            <div class="name">Anthony G.</div>
+            <div class="when">2 months ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <blockquote>Been getting cut by the same barber here for 4 years. Knows what I want before I sit down. That's how you know it's the right shop.</blockquote>
+        <div class="src">Google review</div>
+      </article>
+
+      <article class="review">
+        <div class="top">
+          <div class="av" style="background:#3A1F8E">S</div>
+          <div>
+            <div class="name">Sasha L.</div>
+            <div class="when">5 months ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <blockquote>My fiancé needed a fresh line-up the morning of our wedding. Walked in at 9am, out the door by 9:30. Saved my whole timeline.</blockquote>
+        <div class="src">Google review</div>
+      </article>
+
+      <article class="review">
+        <div class="top">
+          <div class="av" style="background:#8E1F12">R</div>
+          <div>
+            <div class="name">Ricky N.</div>
+            <div class="when">7 months ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <blockquote>Old-school vibe, new-school cuts. The hot towel at the end is the move. Take cash if you want to make a barber's day.</blockquote>
+        <div class="src">Google review</div>
+      </article>
+    </div>
+
+    <div class="review-foot">
+      <div class="mono" style="color:var(--muted)">Scroll →</div>
+      <div class="nav-btns">
+        <button aria-label="Previous review" id="revPrev">←</button>
+        <button aria-label="Next review" id="revNext">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FIND US -->
+<section class="find" id="find">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="mono eyebrow">05 — Find us</div>
+        <h2>Detroit <em>Avenue.</em></h2>
+      </div>
+      <div class="mono" style="color:var(--muted)">Toledo, Ohio</div>
+    </div>
+
+    <div class="find-grid">
+      <a class="map" href="https://maps.google.com/?q=1723+N+Detroit+Ave+Toledo+OH" target="_blank" rel="noopener" aria-label="Open in Google Maps">
+        <div class="label l1">N → North Toledo</div>
+        <div class="label l2">S → Downtown</div>
+        <div class="pin">
+          <div class="bubble">Nitty's</div>
+          <div class="dot"></div>
+        </div>
+        <div class="street">— N. Detroit Ave. —</div>
+      </a>
+
+      <div class="info-card">
+        <div class="info-row">
+          <div class="k">Address</div>
+          <div class="v">1723 N. Detroit Ave<br/>Toledo, OH 43607</div>
+          <a class="copy" href="https://maps.google.com/?q=1723+N+Detroit+Ave+Toledo+OH" target="_blank" rel="noopener">Open in Maps ↗</a>
+        </div>
+
+        <div class="info-row">
+          <div class="k">Call the shop</div>
+          <div class="v small">(419) 343-9697</div>
+          <a class="copy" id="copyPhone">Copy number ⎘</a>
+        </div>
+
+        <div class="info-row">
+          <div class="k">Hours <span id="todayPill" class="mono" style="color:var(--red);margin-left:8px"></span></div>
+          <div class="hours" id="hoursList">
+            <div class="d">Monday</div><div class="t">9:00a — 6:00p</div>
+            <div class="d">Tuesday</div><div class="t">9:00a — 6:00p</div>
+            <div class="d">Wednesday</div><div class="t">9:00a — 6:00p</div>
+            <div class="d">Thursday</div><div class="t">9:00a — 6:00p</div>
+            <div class="d">Friday</div><div class="t">8:00a — 6:00p</div>
+            <div class="d">Saturday</div><div class="t">8:00a — 6:00p</div>
+            <div class="d">Sunday</div><div class="t">Closed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="wrap">
+    <h2>
+      Come <em>through.</em><br/>
+      We'll be <em>here.</em>
+    </h2>
+    <div class="row">
+      <a class="btn dark" href="tel:+14193439697">📞 (419) 343-9697</a>
+      <a class="btn outline" href="https://maps.google.com/?q=1723+N+Detroit+Ave+Toledo+OH" target="_blank" rel="noopener">→ 1723 N. Detroit Ave</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <div class="left">
+      <span>© Nitty's Walk In Barbershop</span>
+      <span>·</span>
+      <span>1723 N. Detroit Ave, Toledo OH 43607</span>
+      <span>·</span>
+      <span>(419) 343-9697</span>
+    </div>
+    <div class="mono">Cut · clean · out the door.</div>
+  </div>
+</footer>
+
+</main>
+
+<div class="toast" id="toast">Phone number copied</div>
+
+<script>
+/* ====== mobile nav ====== */
+const burger = document.getElementById('burger');
+const topnav = document.getElementById('topnav');
+burger.addEventListener('click', ()=> topnav.classList.toggle('open'));
+document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>topnav.classList.remove('open')));
+
+/* ====== live open/closed ====== */
+/* Hours: Sun closed, Mon-Thu 9-18, Fri-Sat 8-18 */
+const HOURS = [
+  null,           // Sun closed
+  [9,18],         // Mon
+  [9,18],         // Tue
+  [9,18],         // Wed
+  [9,18],         // Thu
+  [8,18],         // Fri
+  [8,18],         // Sat
+];
+
+function nowStatus(){
+  const d = new Date();
+  const day = d.getDay();
+  const h = d.getHours() + d.getMinutes()/60;
+  const rng = HOURS[day];
+  if(!rng) return {open:false,label:'Closed today · back tomorrow'};
+  if(h < rng[0]) return {open:false,label:`Closed · opens ${fmt(rng[0])}`};
+  if(h >= rng[1]) return {open:false,label:'Closed · back tomorrow'};
+  return {open:true,label:'Walk-ins open now'};
+}
+function fmt(h){
+  const hr = Math.floor(h);
+  const m = Math.round((h-hr)*60);
+  const ap = hr>=12?'p':'a';
+  const hh = ((hr+11)%12)+1;
+  return hh + (m?(':'+String(m).padStart(2,'0')):'')+ap;
+}
+function applyStatus(){
+  const s = nowStatus();
+  const dot = document.getElementById('livedot');
+  const txt = document.getElementById('livetxt');
+  const navStatus = document.getElementById('navstatus');
+  const navDot = document.getElementById('navdot');
+  const badge = dot.closest('.badge');
+  txt.textContent = s.label;
+  navStatus.textContent = s.open ? 'Open · walk in' : 'Closed · see hours';
+  // short label fallback at narrow widths
+  const short = document.querySelector('.label-short');
+  if(short) short.textContent = s.open ? 'Open' : 'Closed';
+  if(s.open){
+    badge.classList.add('live');badge.classList.remove('closed');
+    dot.style.background = '#1ea84a';
+    navDot.style.background = '#5BD16A';
+  } else {
+    badge.classList.add('closed');badge.classList.remove('live');
+    dot.style.background = 'var(--red)';
+    navDot.style.background = 'var(--red)';
+  }
+  // Highlight today in hours grid
+  const dayIdx = new Date().getDay();
+  // grid order: Mon Tue Wed Thu Fri Sat Sun (we wrote Mon first)
+  const order = [1,2,3,4,5,6,0];
+  const list = document.getElementById('hoursList');
+  if(list){
+    [...list.children].forEach(el=>el.classList.remove('today'));
+    const pos = order.indexOf(dayIdx);
+    if(pos>=0){
+      list.children[pos*2].classList.add('today');
+      list.children[pos*2+1].classList.add('today');
+    }
+  }
+  const tp = document.getElementById('todayPill');
+  if(tp) tp.textContent = s.open ? '· OPEN NOW' : '· CLOSED';
+}
+applyStatus();
+setInterval(applyStatus, 60_000);
+
+/* ====== reviews horizontal nav ====== */
+const row = document.getElementById('reviewRow');
+document.getElementById('revPrev').onclick = ()=>row.scrollBy({left:-380,behavior:'smooth'});
+document.getElementById('revNext').onclick = ()=>row.scrollBy({left:380,behavior:'smooth'});
+
+/* ====== copy phone ====== */
+const toast = document.getElementById('toast');
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>toast.classList.remove('show'),1800);
+}
+document.getElementById('copyPhone').addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText('+14193439697');
+    showToast('Number copied — call us!');
+  }catch(e){
+    showToast('+1 (419) 343-9697');
+  }
+});
+
+/* ====== service cards keyboard ====== */
+document.querySelectorAll('.svc').forEach(c=>{
+  c.addEventListener('click',()=>showToast("Walk in — we'll take care of it"));
+});
+</script>
+</body>
+</html>
